@@ -87,7 +87,7 @@ class Detector:
 
     def get_gender(self, name, country=None):
         """Returns best gender for the given name and country pair"""
-        if not self.case_sensitive:
+        if not self.case_sensitive and name is not None:
             name = name.lower()
 
         if name not in self.names:
