@@ -94,10 +94,11 @@ class Detector:
     def get_gender(self, name, country=None):
         """Returns best gender for the given name and country pair"""
 
-        if not self.accent_sensitive:
-            name = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode()
-        if not self.case_sensitive:
-            name = name.lower()
+        if type(name) is str:
+            if not self.accent_sensitive:
+                name = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode()
+            if not self.case_sensitive:
+                name = name.lower()
 
 
         if name not in self.names:
