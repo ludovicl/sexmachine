@@ -1,6 +1,7 @@
 import os.path
 import codecs
 from .mapping import map_name
+import unicodedata
 
 
 class NoCountryError(Exception):
@@ -23,10 +24,12 @@ class Detector:
 
     def __init__(self,
                  case_sensitive=True,
+                 accent_sensitive=True,
                  unknown_value=u"andy"):
 
         """Creates a detector parsing given data file"""
         self.case_sensitive = case_sensitive
+        self.accent_sensitive = accent_sensitive
         self.unknown_value = unknown_value
         self._parse(os.path.join(os.path.dirname(__file__), "data/nam_dict.txt"))
 
@@ -45,6 +48,9 @@ class Detector:
             parts = line.split()
             country_values = line[30:-1]
             name = map_name(parts[1])
+
+            if not self.accent_sensitive:
+                name = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode()
             if not self.case_sensitive:
                 name = name.lower()
 
@@ -87,8 +93,13 @@ class Detector:
 
     def get_gender(self, name, country=None):
         """Returns best gender for the given name and country pair"""
-        if not self.case_sensitive and name is not None:
-            name = name.lower()
+
+        if type(name) is str:
+            if not self.accent_sensitive:
+                name = unicodedata.normalize('NFD', name).encode('ascii', 'ignore').decode()
+            if not self.case_sensitive:
+                name = name.lower()
+
 
         if name not in self.names:
             return self.unknown_value
